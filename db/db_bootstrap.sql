@@ -12,11 +12,11 @@ USE grocery_store;
 Store: Has an ID and location, as well as a count of that store's total number of staff members and total net sales.
 */
 CREATE TABLE Store (
-    storeId integer NOT NULL,
+    storeId integer,
     storeLocation varchar(100),
     staffCount integer,
     netSales float,
-    PRIMARY KEY (storeId)
+    PRIMARY KEY (storeId) -- any primary keys are already not null so we don't need to specify again
 );
 
 /*
@@ -24,12 +24,12 @@ Manager: Has a first and last name and a salary in USD. Managers do not have the
 store ID, since each store can only have one manager.
 */
 CREATE TABLE Manager (
-    storeId integer NOT NULL,
+    storeId integer,
     firstName varchar(20),
     lastName varchar(50),
     salary float,
     PRIMARY KEY (storeId),
-    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade ON DELETE restrict
+    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade 
 );
 
 /*
@@ -37,7 +37,7 @@ Employee: Has an ID, first and last name, birth date, position title, wage in US
 the store they work at.
 */
 CREATE TABLE Employee (
-    employeeId integer NOT NULL,
+    employeeId integer,
     firstName varchar(20),
     lastName varchar(50),
     birthDate date,
@@ -45,8 +45,8 @@ CREATE TABLE Employee (
     wage float,
     hoursPerWeek integer,
     storeId integer,
-    PRIMARY KEY (employeeId),
-    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade ON DELETE restrict
+    PRIMARY KEY (employeeId), 
+    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade
 );
 
 /*
@@ -55,13 +55,13 @@ employee it is paired with. Since an employee can technically have multiple vehi
 up this table's primary key.
 */
 CREATE TABLE Vehicle (
-    vehicleId integer NOT NULL,
-    employeeId integer NOT NULL,
+    vehicleId integer,
+    employeeId integer,
     year integer,
     make varchar(50),
     model varchar(50),
     PRIMARY KEY (vehicleId, employeeId),
-    FOREIGN KEY (employeeId) REFERENCES Employee.employeeId ON UPDATE cascade ON DELETE restrict
+    FOREIGN KEY (employeeId) REFERENCES Employee.employeeId ON UPDATE cascade
 );
 
 /*
@@ -75,7 +75,7 @@ CREATE TABLE Item (
     price float,
     stock integer,
     PRIMARY KEY (itemName, storeId),
-    FOREIGN KEY (storeId) ON UPDATE cascade ON DELETE restrict
+    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade
 );
 
 /*
@@ -83,7 +83,7 @@ Credit Card Info: Has a credit card #, a card type (visa, mastercard, etc.), a f
 CVC (the 3-digit security code on the back).
 */
 CREATE TABLE CreditCard (
-    cardNumber integer NOT NULL,
+    cardNumber integer,
     cardType varchar(20),
     firstName varchar(20),
     lastName varchar(50),
@@ -112,8 +112,8 @@ CREATE TABLE Customer (
     creditCard integer,
     employeeRepId integer,
     PRIMARY KEY (customerId),
-    FOREIGN KEY (creditCard) REFERENCES CreditCard.cardNumber ON UPDATE cascade ON DELETE restrict,
-    FOREIGN KEY (employeeRepId) REFERENCES Employee.employeeId ON UPDATE cascade ON DELETE restrict
+    FOREIGN KEY (creditCard) REFERENCES CreditCard.cardNumber ON UPDATE cascade,
+    FOREIGN KEY (employeeRepId) REFERENCES Employee.employeeId ON UPDATE CASCADE
 );
 
 /*
@@ -121,7 +121,7 @@ Order Info: Has an ID, total price in USD, status ('processing', 'on the way', '
 pickup status (yes or no), and any additional details the customer may want to leave to the deliverer. It is also linkd with the ID of
 the customer who ordered it, and the employee who is delivering it.
 */
-CREATE TABLE Order (
+CREATE TABLE Orders (
     orderId integer NOT NULL,
     total float,
     orderStatus varchar(20),
@@ -131,8 +131,8 @@ CREATE TABLE Order (
     orderedBy integer,
     fulfilledBy integer,
     PRIMARY KEY (orderId),
-    FOREIGN KEY (orderedBy) REFERENCES Customer.customerId ON UPDATE cascade ON DELETE restrict,
-    FOREIGN KEY (fulfilledBy) REFERENCES Employee.employeeId ON UPDATE cascade ON DELETE restrict
+    FOREIGN KEY (orderedBy) REFERENCES Customer.customerId ON UPDATE cascade,
+    FOREIGN KEY (fulfilledBy) REFERENCES Employee.employeeId ON UPDATE cascade
 );
 
 /*
@@ -146,8 +146,8 @@ CREATE TABLE OrderItem (
     quantity integer,
     retrieved boolean,
     PRIMARY KEY (orderId, itemName),
-    FOREIGN KEY (orderId) REFERENCES Order.orderId ON UPDATE cascade ON DELETE restrict,
-    FOREIGN KEY (itemName) REFERENCES Item.itemName ON UPDATE cascade ON DELETE restrict
+    FOREIGN KEY (orderId) REFERENCES Orders.orderId ON UPDATE cascade,
+    FOREIGN KEY (itemName) REFERENCES Item.itemName ON UPDATE CASCADE
 );
 
 -- Sample data
@@ -185,7 +185,7 @@ insert into CreditCard (cardNumber, cardType, firstName, lastName, cvc) values (
 insert into Customer (customerId, firstName, lastName, email, addressNum, street, city, addressState, zip, bankAcctNum, paymentApp, creditCard, employeeRepId) 
     values ('06531697', 'Thornton', 'Paxton', 'tpaxton0@people.com.cn', '6', 'Heath', 'Karachi', null, '12311', '2166183595', '@LoreneMarvin', '6767833590345462', '84536010');
 insert into Customer (customerId, firstName, lastName, email, addressNum, street, city, addressState, zip, bankAcctNum, paymentApp, creditCard, employeeRepId) 
-    values ('42447219', 'Marena', 'Hebdon', 'mhebdon1@google.co.uk', '94134', 'Bunker Hill', 'Lipník nad Bečvou', null, '757 01', '9070896625', null, '3544477625962458' '85107380');
+    values ('42447219', 'Marena', 'Hebdon', 'mhebdon1@google.co.uk', '94134', 'Bunker Hill', 'Lipník nad Bečvou', null, '757 01', '9070896625', null, '3544477625962458', '85107380');
 insert into Customer (customerId, firstName, lastName, email, addressNum, street, city, addressState, zip, bankAcctNum, paymentApp, creditCard, employeeRepId) 
     values ('60542269', 'Serena', 'Hackett', 'shackett2@woothemes.com', '12204', 'Hollow Ridge', 'São Lourenço da Mata', null, '54700-000', '7987617660', '@SerenaHackett', null, '31141736');
 insert into Customer (customerId, firstName, lastName, email, addressNum, street, city, addressState, zip, bankAcctNum, paymentApp, creditCard, employeeRepId) 
@@ -193,15 +193,15 @@ insert into Customer (customerId, firstName, lastName, email, addressNum, street
 insert into Customer (customerId, firstName, lastName, email, addressNum, street, city, addressState, zip, bankAcctNum, paymentApp, creditCard, employeeRepId) 
     values ('82888899', 'Biron', 'Felstead', 'bfelstead4@issuu.com', '9', 'Loeprich', 'Azogues', 'Kansas', '00001', '0790843235', null, '3541625828738504', '34495148');
 
-insert into Order (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
+insert into Orders (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
     values ('531414762652', '$57.23', 'vitae nisl', true, false, 'mauris lacinia sapien quis', '06531697', '34495148');
-insert into Order (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
+insert into Orders (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
     values ('960883471731', '$42.27', 'quam turpis adipiscing', false, true, 'id pretium iaculis', '60542269', '34495148');
-insert into Order (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
+insert into Orders (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
     values ('258834829965', '$10.62', 'maecenas', false, true, null, '60542269', '31141736');
-insert into Order (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
+insert into Orders (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
     values ('471042769086', '$36.84', 'nam ultrices libero non mattis', true, false, null, '42447219', '85107380');
-insert into Order (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
+insert into Orders (orderId, total, orderStatus, paid, pickup, details, orderedBy, fulfilledBy) 
     values ('585153815919', '$95.86', 'nisl', true, false, 'nonummy integer non velit donec diam', '82888899', '84536010');
 
 insert into OrderItem (orderId, itemName, quantity, retrieved) values ('531414762652', 'Tomatoes', 1, true);
