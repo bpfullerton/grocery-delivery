@@ -12,10 +12,10 @@ RUN apk add gcc musl-dev python3-dev libffi-dev openssl-dev
 
 # copying the requirements.txt file from the host system to
 # inside the container
-COPY src/requirements.txt requirements.txt
+COPY src/requirements.txt requirements
 
 # install requirements inside the container using pip
-RUN pip install -r requirements.txt
+RUN pip install -r requirements
 
 # expose port 4000 from the container
 EXPOSE 4000
