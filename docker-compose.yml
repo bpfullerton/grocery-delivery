@@ -59,6 +59,6 @@ services:
 
 secrets:
   secret_db_pw:
-    file: ./secrets/db_password.txt
+    file: ./secrets/db_password/db_password.txt
   secret_db_root_pw:
-    file: ./secrets/db_root_password.txt
+    file: ./secrets/db_root_password/db_root_password.txt
