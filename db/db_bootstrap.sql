@@ -29,11 +29,7 @@ CREATE TABLE Manager (
     lastName varchar(50),
     salary float,
     PRIMARY KEY (storeId),
-<<<<<<< HEAD
-    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade on DELETE restrict
-=======
     FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade ON DELETE restrict
->>>>>>> parent of 870db4d (fixing my errors)
 );
 
 /*
