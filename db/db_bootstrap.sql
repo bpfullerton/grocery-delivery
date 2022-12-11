@@ -29,7 +29,7 @@ CREATE TABLE Manager (
     lastName varchar(50),
     salary float,
     PRIMARY KEY (storeId),
-    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade 
+    FOREIGN KEY (storeId) REFERENCES Store.storeId ON UPDATE cascade on DELETE restrict
 );
 
 /*
