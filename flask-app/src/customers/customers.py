@@ -22,10 +22,10 @@ def get_customers():
     return the_response
 
 # Get customer cart details
-@customers.route('/customers/cart', methods=['GET'])
-def get_customer(userID):
+@customers.route('/cart', methods=['GET'])
+def get_customer(customerId):
     cursor = db.get_db().cursor()
-    cursor.execute('select * from customers where customerNumber = {0}'.format(userID))
+    cursor.execute('select * from customers where customerNumber = {0}'.format(customerId))
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
@@ -38,7 +38,7 @@ def get_customer(userID):
 
     
 @customers.route('/addCreditCard', methods = ['POST'])
-def add_item():
+def add_item(customerId):
     current_app.logger.info(request.form)
     cursor = db.get_db().cursor()
     number = request.form['cardNumber']
@@ -47,7 +47,7 @@ def add_item():
     lname = request.form['lname']
     cvc = request.form['cvc']
     query = f'insert into CreditCard (cardNumber, cardType, firstName, lastName, cvc) values (\"{number}\", \"{type}\", \"{fname}\", \"{lname}\", \"{cvc}\")'
-    query2 = f'update Customer set creditCard = \"{number}\" where firstName = \"{fname}\" and lastName = \"{lname}\"'
+    query2 = f'update Customer set creditCard = {0} where customerID = {1}'.format(number, customerId)
     cursor.execute(query)
     cursor.execute(query2)
     db.get_db().commit()
