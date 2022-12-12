@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, current_app
 import json
 from src import db
 
@@ -21,8 +21,8 @@ def get_customers():
     the_response.mimetype = 'application/json'
     return the_response
 
-# Get customer detail for customer with particular userID
-@customers.route('/customers/<userID>', methods=['GET'])
+# Get customer cart details
+@customers.route('/customers/cart', methods=['GET'])
 def get_customer(userID):
     cursor = db.get_db().cursor()
     cursor.execute('select * from customers where customerNumber = {0}'.format(userID))
@@ -35,3 +35,20 @@ def get_customer(userID):
     the_response.status_code = 200
     the_response.mimetype = 'application/json'
     return the_response
+
+    
+@customers.route('/addCreditCard', methods = ['POST'])
+def add_item():
+    current_app.logger.info(request.form)
+    cursor = db.get_db().cursor()
+    number = request.form['cardNumber']
+    type = request.form['cardType']
+    fname = request.form['fname']
+    lname = request.form['lname']
+    cvc = request.form['cvc']
+    query = f'insert into CreditCard (cardNumber, cardType, firstName, lastName, cvc) values (\"{number}\", \"{type}\", \"{fname}\", \"{lname}\", \"{cvc}\")'
+    query2 = f'update Customer set creditCard = \"{number}\" where firstName = \"{fname}\" and lastName = \"{lname}\"'
+    cursor.execute(query)
+    cursor.execute(query2)
+    db.get_db().commit()
+    return "Success!"
