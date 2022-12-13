@@ -4,6 +4,7 @@ from src import db
 
 manager = Blueprint('manager', __name__)
 
+# add item to the db
 @manager.route('/addItem', methods = ['POST'])
 def add_item():
     current_app.logger.info(request.form)
@@ -17,7 +18,7 @@ def add_item():
     db.get_db().commit()
     return "Success!"
 
-# Get all customers from the DB
+# Get all items from the DB
 @manager.route('/allItems', methods=['GET'])
 def get_items():
     cursor = db.get_db().cursor()

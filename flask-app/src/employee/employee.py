@@ -5,7 +5,7 @@ from src import db
 
 employee = Blueprint('employee', __name__)
 
-# Get all the products from the database
+# Get carts assigned to employee
 @employee.route('/id', methods=['POST'])
 def get_id():
     # get a cursor object from the database

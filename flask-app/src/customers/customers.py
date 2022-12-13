@@ -17,7 +17,7 @@ def get_customers():
     db.get_db().commit()
     return "Success!"
 
-# Get customer cart details
+# Get customer carts
 @customers.route('/cart', methods=['POST'])
 def get_customer():
     # get a cursor object from the database
@@ -100,7 +100,7 @@ def add_payment():
     db.get_db().commit()
     return "Success!"
 
-    # Get all customers from the DB
+    # Get all stores from the DB
 @customers.route('/allStores', methods=['GET'])
 def all_stores():
     cursor = db.get_db().cursor()
@@ -115,7 +115,7 @@ def all_stores():
     the_response.mimetype = 'application/json'
     return the_response
 
-    # Get all customers from the DB
+    # Get all items from the DB
 @customers.route('/allItems', methods=['POST'])
 def all_items():
     cursor = db.get_db().cursor()
@@ -131,7 +131,7 @@ def all_items():
     the_response.mimetype = 'application/json'
     return the_response
 
-    # Get all customers from the DB
+    # get carts for this user
 @customers.route('/choose', methods=['POST'])
 def choose_order():
     cursor = db.get_db().cursor()
