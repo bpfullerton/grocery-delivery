@@ -22,15 +22,25 @@ def get_customers():
     return the_response
 
 # Get customer cart details
-@customers.route('/<customerID>/cart', methods=['GET'])
-def get_customer(customerId, ):
+@customers.route('/cart', methods=['POST'])
+def get_customer():
+    # get a cursor object from the database
+    current_app.logger.info(request.form)
     cursor = db.get_db().cursor()
-    cursor.execute('select itemName from OrderItem where orderID = (select orderID From Order where OrderedBy = {0})'.format(customerId))
-    row_headers = [x[0] for x in cursor.description]
+    id = request.form['id']
+    query = f'SELECT * FROM Orders WHERE orderedBy = \"{id}\"'
+    cursor.execute(query)
+       # grab the column headers from the returned data
+    column_headers = [x[0] for x in cursor.description]
+
+    # create an empty dictionary object to use in 
+    # putting column headers together with data
     json_data = []
+
+    # fetch all the data from the cursor
     theData = cursor.fetchall()
     for row in theData:
-        json_data.append(dict(zip(row_headers, row)))
+        json_data.append(dict(zip(column_headers, row)))
     the_response = make_response(jsonify(json_data))
     the_response.status_code = 200
     the_response.mimetype = 'application/json'
