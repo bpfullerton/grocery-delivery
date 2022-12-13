@@ -2,6 +2,7 @@
 
 -- Creates database
 CREATE DATABASE grocery_store;
+GRANT ALL PRIVILEGES ON grocery_store.* to 'webapp'@'%';
 FLUSH PRIVILEGES;
 
 USE grocery_store;

@@ -22,7 +22,7 @@ def get_customers():
     return the_response
 
 # Get customer cart details
-@customers.route('/cart', methods=['GET'])
+@customers.route('/<customerID>/cart', methods=['GET'])
 def get_customer(customerId, ):
     cursor = db.get_db().cursor()
     cursor.execute('select itemName from OrderItem where orderID = (select orderID From Order where OrderedBy = {0})'.format(customerId))
@@ -39,7 +39,7 @@ def get_customer(customerId, ):
     
 # add credit card
 @customers.route('/addCreditCard', methods = ['POST'])
-def add_cc(customerId):
+def add_cc():
     current_app.logger.info(request.form)
     cursor = db.get_db().cursor()
     number = request.form['cardNumber']
@@ -47,6 +47,7 @@ def add_cc(customerId):
     fname = request.form['fname']
     lname = request.form['lname']
     cvc = request.form['cvc']
+    customerId = request.form['customerId']
     query = f'insert into CreditCard (cardNumber, cardType, firstName, lastName, cvc) values (\"{number}\", \"{type}\", \"{fname}\", \"{lname}\", \"{cvc}\")'
     query2 = f'update Customer set creditCard = {0} where customerID = {1}'.format(number, customerId)
     cursor.execute(query)
@@ -56,14 +57,15 @@ def add_cc(customerId):
 
 # add other payment method
 @customers.route('/addPayment', methods = ['POST'])
-def add_payment(customerId):
+def add_payment():
     current_app.logger.info(request.form)
     cursor = db.get_db().cursor()
     bankAccount = request.form['bankAccount']
     url = request.form['url']
-    query = 'update Customer set bankAcctNum = {0} where customerID = {1}'.format(bankAccount, customerId)
-    query2 = 'update Customer set paymentApp = {0} where customerID = {1}'.format(url, customerId)
+    customerId = request.form['customerId']
+    query = f'update Customer set bankAcctNum = {0} where customerId = {1}'.format(bankAccount, customerId)
+    query2 = f'update Customer set paymentApp = {0} where customerId = {1}'.format(url, customerId)
     cursor.execute(query)
-    cursor.execut(query2)
+    cursor.execute(query2)
     db.get_db().commit()
     return "Success!"
