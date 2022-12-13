@@ -5,22 +5,17 @@ from src import db
 
 customers = Blueprint('customers', __name__)
 
-# TODO: implement adding to cart
+# adding to cart
 @customers.route('/addCart', methods=['POST'])
 def get_customers():
     cursor = db.get_db().cursor()
-
-    cursor.execute('select customerNumber, customerName,\
-        creditLimit from customers')
-    row_headers = [x[0] for x in cursor.description]
-    json_data = []
-    theData = cursor.fetchall()
-    for row in theData:
-        json_data.append(dict(zip(row_headers, row)))
-    the_response = make_response(jsonify(json_data))
-    the_response.status_code = 200
-    the_response.mimetype = 'application/json'
-    return the_response
+    itemName = request.form['itemName']
+    quantity = request.form['quantity']
+    orderId = request.form['orderId']
+    query = f'insert into OrderItem (orderId, itemName, quantity, retrieved) values (\"{orderId}\", \"{itemName}\", \"{quantity}\", \"{0}\")'
+    cursor.execute(query)
+    db.get_db().commit()
+    return "Success!"
 
 # Get customer cart details
 @customers.route('/cart', methods=['POST'])
@@ -53,8 +48,8 @@ def get_customer_cart():
     # get a cursor object from the database
     current_app.logger.info(request.form)
     cursor = db.get_db().cursor()
-    id = request.form['id']
-    query = f'SELECT * FROM OrderItem WHERE orderId = (SELECT orderId FROM Orders WHERE orderedBy = \"{id}\")'
+    cart = request.form['orderId']
+    query = f'SELECT * FROM OrderItem WHERE orderId = \"{cart}\"'
     cursor.execute(query)
        # grab the column headers from the returned data
     column_headers = [x[0] for x in cursor.description]
@@ -121,10 +116,27 @@ def all_stores():
     return the_response
 
     # Get all customers from the DB
-@customers.route('/allItems', methods=['GET'])
+@customers.route('/allItems', methods=['POST'])
 def all_items():
     cursor = db.get_db().cursor()
-    cursor.execute('select itemName, price from Item')
+    storeID = request.form['storeID']
+    cursor.execute(f'select itemName, price from Item where storeId = \"{storeID}\"')
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
+
+    # Get all customers from the DB
+@customers.route('/choose', methods=['POST'])
+def choose_order():
+    cursor = db.get_db().cursor()
+    id = request.form['customerID']
+    cursor.execute(f'select orderId, total from Orders where orderedBy = \"{id}\"')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
