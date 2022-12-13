@@ -9,6 +9,7 @@ customers = Blueprint('customers', __name__)
 @customers.route('/addCart', methods=['POST'])
 def get_customers():
     cursor = db.get_db().cursor()
+
     cursor.execute('select customerNumber, customerName,\
         creditLimit from customers')
     row_headers = [x[0] for x in cursor.description]
@@ -46,6 +47,30 @@ def get_customer():
     the_response.mimetype = 'application/json'
     return the_response
 
+# Get customer cart details
+@customers.route('/currentCart', methods=['POST'])
+def get_customer_cart():
+    # get a cursor object from the database
+    current_app.logger.info(request.form)
+    cursor = db.get_db().cursor()
+    id = request.form['id']
+    query = f'SELECT * FROM OrderItem WHERE orderId = (SELECT orderId FROM Orders WHERE orderedBy = \"{id}\")'
+    cursor.execute(query)
+       # grab the column headers from the returned data
+    column_headers = [x[0] for x in cursor.description]
+
+    # create an empty dictionary object to use in 
+    # putting column headers together with data
+    json_data = []
+
+    # fetch all the data from the cursor
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(column_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
     
 # add credit card
 @customers.route('/addCreditCard', methods = ['POST'])
@@ -79,3 +104,33 @@ def add_payment():
     cursor.execute(query2)
     db.get_db().commit()
     return "Success!"
+
+    # Get all customers from the DB
+@customers.route('/allStores', methods=['GET'])
+def all_stores():
+    cursor = db.get_db().cursor()
+    cursor.execute('select storeLocation, storeId from Store')
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
+
+    # Get all customers from the DB
+@customers.route('/allItems', methods=['GET'])
+def all_items():
+    cursor = db.get_db().cursor()
+    cursor.execute('select itemName, price from Item')
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
