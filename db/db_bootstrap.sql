@@ -2,8 +2,7 @@
 
 -- Creates database
 CREATE DATABASE grocery_store;
-CREATE USER "'webapp'"@'%' IDENTIFIED BY 'NUdbd236';
-GRANT ALL PRIVILEGES ON grocery_store.* TO 'webapp'@'%';
+GRANT ALL PRIVILEGES ON grocery_store.* to 'webapp'@'%';
 FLUSH PRIVILEGES;
 
 USE grocery_store;
